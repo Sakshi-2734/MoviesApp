@@ -23,12 +23,6 @@ class MovieApiManager: NSObject, MovieApiProtocol, SearchApiProtocol {
      Api Call - Fetch All Movies details using Base Url
      */
     func invokeMovieApiCall(_ completion: @escaping CompletionBlock) {
-//        guard let bundlePath = Bundle.main.path(forResource: "Info", ofType: "plist"),
-//            let content = FileManager.default.contents(atPath: bundlePath),
-//            let preferences = try? PropertyListDecoder().decode(BaseUrl.self, from: content) else {
-//            return
-//        }
-        
         let session = URLSession.shared
         let urlString: String = "https://wookie.codesubmit.io/movies"
         
@@ -77,22 +71,17 @@ class MovieApiManager: NSObject, MovieApiProtocol, SearchApiProtocol {
      TODO: Reusable dataTask
      */
     func invokeSearchApiCall(_ searchText:String?, _ completion: @escaping CompletionBlock) {
-        guard let bundlePath = Bundle.main.path(forResource: "Info", ofType: "plist"),
-            let content = FileManager.default.contents(atPath: bundlePath),
-            let preferences = try? PropertyListDecoder().decode(BaseUrl.self, from: content),
-            let movieName = searchText else {
-            return
-        }
+        guard let movieName = searchText else { return }
         
         let session = URLSession.shared
-        let urlString: String = "\(preferences.searchBaseUrl)\(movieName)"
+        let urlString: String = "https://wookie.codesubmit.io/movies?q=\(movieName)"
     
         guard let url = URL(string: urlString) else {
             return
         }
         
         var request = URLRequest(url: url)
-        request.setValue(preferences.movieAuthorizationKey, forHTTPHeaderField: "Authorization")
+        request.setValue("Bearer Wookie2019", forHTTPHeaderField: "Authorization")
         
         let task = session.dataTask(with: request) { (data, response, error) in
             if let error = error {

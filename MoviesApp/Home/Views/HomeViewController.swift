@@ -87,9 +87,9 @@ extension HomeViewController: HomeTableViewProtocol {
      */
     func mapSelectedMovieDetail(_ genre: Int, _ movieIndex: Int) {
         if let movieDetails = viewModel.getMovieDetails(genre, movieIndex) {
-//            let viewController = DetailsViewController(nibName: "DetailsViewController", bundle: Bundle.main)
-//            viewController.movieDetails = movieDetails
-//            navigationController?.pushViewController(viewController, animated: true)
+            let viewController = DetailsViewController(nibName: "DetailsViewController", bundle: Bundle.main)
+            viewController.movieDetails = movieDetails
+            navigationController?.pushViewController(viewController, animated: true)
         }
     }
 }
