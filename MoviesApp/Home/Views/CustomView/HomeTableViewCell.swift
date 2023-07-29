@@ -4,9 +4,9 @@
 //
 //  Created by Sakshi Sharma on 2023-07-23.
 //
-//import Kingfisher
-import Foundation
+
 import UIKit
+
 protocol HomeTableViewProtocol: AnyObject {
     func mapSelectedMovieDetail(_ genre: Int, _ movieIndex: Int)
 }
@@ -40,7 +40,6 @@ class HomeTableViewCell: UITableViewCell {
             movieCollectionView.reloadData()
         }
     }
-    
 }
 
 extension HomeTableViewCell: UICollectionViewDelegate, UICollectionViewDataSource {
@@ -55,27 +54,34 @@ extension HomeTableViewCell: UICollectionViewDelegate, UICollectionViewDataSourc
         if let moviePosterString = movieDetailModel?[indexPath.item].poster {
             
             if let url = URL(string: moviePosterString) {
-                let processor = DownsamplingImageProcessor(size: cell.movieImageView.bounds.size) |> RoundCornerImageProcessor(cornerRadius: 5)
-                cell.movieImageView.kf.indicatorType = .activity
-                cell.movieImageView.kf.setImage(
-                    with: url,
-                    placeholder: nil,
-                    options: [
-                        .processor(processor),
-                        .scaleFactor(UIScreen.main.scale),
-                        .transition(.fade(1)),
-                        .cacheOriginalImage
-                    ], completionHandler:
-                        {
-                            result in
-                            //Kingfisher test
-                                    switch result {
-                                    case .success(let value):
-                                        print("Task done for: \(value.source.url?.absoluteString ?? "")")
-                                    case .failure(let error):
-                                        print("Job failed: \(error.localizedDescription)")
-                                    }
-                        })
+                getData(from: url) { data, response, error in
+                       guard let data = data, error == nil else { return }
+                       // always update the UI from the main thread
+                       DispatchQueue.main.async() {
+                           cell.movieImageView.image = UIImage(data: data)
+                       }
+                   }
+//                let processor = DownsamplingImageProcessor(size: cell.movieImageView.bounds.size) |> RoundCornerImageProcessor(cornerRadius: 5)
+//                cell.movieImageView.kf.indicatorType = .activity
+//                cell.movieImageView.kf.setImage(
+//                    with: url,
+//                    placeholder: nil,
+//                    options: [
+//                        .processor(processor),
+//                        .scaleFactor(UIScreen.main.scale),
+//                        .transition(.fade(1)),
+//                        .cacheOriginalImage
+//                    ], completionHandler:
+//                        {
+//                            result in
+//                            //Kingfisher test
+//                                    switch result {
+//                                    case .success(let value):
+//                                        print("Task done for: \(value.source.url?.absoluteString ?? "")")
+//                                    case .failure(let error):
+//                                        print("Job failed: \(error.localizedDescription)")
+//                                    }
+//                        })
             }
         }
         
@@ -86,6 +92,10 @@ extension HomeTableViewCell: UICollectionViewDelegate, UICollectionViewDataSourc
         if let genre = genreIndex {
             cellDelegate?.mapSelectedMovieDetail(genre, indexPath.item)
         }
+    }
+    
+    func getData(from url: URL, completion: @escaping (Data?, URLResponse?, Error?) -> ()) {
+        URLSession.shared.dataTask(with: url, completionHandler: completion).resume()
     }
 }
 

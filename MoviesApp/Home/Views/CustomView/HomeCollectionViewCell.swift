@@ -8,13 +8,12 @@
 import UIKit
 
 class HomeCollectionViewCell: UICollectionViewCell {
-
-    @IBOutlet weak var movieImageView: UIImageView!
     
+    @IBOutlet weak var movieImageView: UIImageView!
+
     override func awakeFromNib() {
         super.awakeFromNib()
         // Initialization code
     }
 
 }
-
